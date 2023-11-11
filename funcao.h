@@ -64,3 +64,15 @@ void imprimir_historico(int cpf);
 //Função para acessar os dados do cliente para poder chamar a função imprimir_histórico
 void extrato(struct Cliente clientes[], int num_clientes);
 
+
+//Função para listar todos os clientes criados
+void listar_clientes(void);
+
+//Função para apagar um cliente em específico e todos os seus dados
+void apagar_clientes(struct Cliente *clientes, int tamanho);
+
+//Função para listar todos os funcionários criados
+void listar_funcionarios(void);
+
+//Função para apagar um funcionário em específico e todos os seus dados
+void apagar_funcionarios(struct Funcionario *funcionarios, int tamanho);

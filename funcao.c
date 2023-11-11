@@ -432,3 +432,123 @@ void extrato(struct Cliente clientes[], int num_clientes) {
 
     fclose(arquivo_clientes);
 }
+
+
+
+//Função para listar todos os clientes criados
+void listar_clientes() {
+  FILE *arquivo = fopen("clientes.dat", "rb");
+  if (arquivo == NULL) {
+    printf("Falha ao abrir o arquivo.\n");
+    exit(1);
+  }
+
+  printf("====================================================\n");
+  printf("| CPF | NOME | Tipo de conta | Saldo |\n");
+  printf("====================================================\n");
+
+  struct Cliente cliente;
+  while (fread(&cliente, sizeof(struct Cliente), 1, arquivo) == 1) {
+    printf("| %d | %s | %s | %.2f |\n", cliente.cpf, cliente.nome_cliente,
+           cliente.conta, cliente.saldo);
+  }
+
+  if (fread(&cliente, sizeof(struct Cliente), 1, arquivo) == 0)
+    fclose(arquivo);
+}
+
+//Função para apagar um cliente em específico e todos os seus dados
+void apagar_clientes(struct Cliente *clientes, int tamanho) {
+  int cpf;
+  printf("Digite o CPF da conta que deseja excluir: ");
+  scanf("%d", &cpf);
+
+  FILE *arquivo = fopen("clientes.dat", "rb+");
+  if (arquivo == NULL) {
+    printf("Falha ao abrir o arquivo de clientes.\n");
+    return;
+  }
+
+  struct Cliente cliente;
+  size_t tamanho_cliente = sizeof(struct Cliente);
+
+  int encontrado = 0;
+  while (fread(&cliente, tamanho_cliente, 1, arquivo) == 1) {
+    if (cliente.cpf == cpf) {
+      encontrado = 1;
+      break;
+    }
+  }
+
+  if (encontrado) {
+    fseek(arquivo, -tamanho_cliente, SEEK_CUR);
+
+    memset(&cliente, 0, tamanho_cliente);
+
+    fwrite(&cliente, tamanho_cliente, 1, arquivo);
+    fclose(arquivo);
+    printf("Cliente com CPF %d apagado com sucesso.\n", cpf);
+  } else {
+    fclose(arquivo);
+    printf("Cliente com CPF %d não encontrado.\n", cpf);
+  }
+}
+
+//Função para listar todos os funcionários criados
+void listar_funcionarios() {
+  FILE *arquivo = fopen("funcionarios.dat", "rb");
+  if (arquivo == NULL) {
+    printf("Falha ao abrir o arquivo.\n");
+    exit(1);
+  }
+
+  printf("=================\n");
+  printf("| CPF | NOME |\n");
+  printf("=================\n");
+
+  struct Funcionario funcionario;
+  while (fread(&funcionario, sizeof(struct Funcionario), 1, arquivo) == 1) {
+    printf("| %d | %s |\n", funcionario.cpf_funcionario, funcionario.nome);
+  }
+
+  if (fread(&funcionario, sizeof(struct Funcionario), 1, arquivo) == 0)
+    fclose(arquivo);
+}
+
+//Função para apagar um funcionário em específico e todos os seus dados
+void apagar_funcionarios(struct Funcionario *funcionarios, int tamanho) {
+  int cpf_funcionario;
+  printf("Digite o CPF da conta que deseja excluir: ");
+  scanf("%d", &cpf_funcionario);
+
+  FILE *arquivo = fopen("funcionarios.dat", "rb+");
+  if (arquivo == NULL) {
+    printf("Falha ao abrir o arquivo de funcionarios.\n");
+    return;
+  }
+
+  struct Funcionario funcionario;
+  size_t tamanho_funcionario = sizeof(struct Funcionario);
+
+  int encontrado = 0;
+  while (fread(&funcionario, tamanho_funcionario, 1, arquivo) == 1) {
+    if (funcionario.cpf_funcionario == cpf_funcionario) {
+      encontrado = 1;
+      break;
+    }
+  }
+
+  if (encontrado) {
+    fseek(arquivo, -tamanho_funcionario, SEEK_CUR);
+
+    memset(&funcionario, 0, tamanho_funcionario);
+
+    fwrite(&funcionario, tamanho_funcionario, 1, arquivo);
+    fclose(arquivo);
+    printf("Funcionário com CPF %d apagado com sucesso.\n", cpf_funcionario);
+  } else {
+    fclose(arquivo);
+    printf("Funcionário com CPF %d não encontrado.\n", cpf_funcionario);
+  }
+}
+

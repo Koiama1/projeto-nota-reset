@@ -47,3 +47,20 @@ void login(void);
 
 //Função inicial do programa em que apresenta as principais opções para utilizar o programa
 void menu_login(void);
+
+
+//Função para realizar um débito
+void debito(struct Cliente *clientes, int tamanho);
+
+//Função para realizar um depósito
+void deposito(struct Cliente *clientes, int tamanho);
+
+//Função para realizar uma transferência
+void transferencia(void);
+
+//Função que irá acessar o histórico de transações e imprimi-lo
+void imprimir_historico(int cpf);
+
+//Função para acessar os dados do cliente para poder chamar a função imprimir_histórico
+void extrato(struct Cliente clientes[], int num_clientes);
+

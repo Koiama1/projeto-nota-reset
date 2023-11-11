@@ -42,3 +42,8 @@ void novo_funcionario(void);
 //Função para criar um novo cliente
 void novo_cliente(void);
 
+//Função de login para escolher qual conta acessar, a de funcionário ou a de cliente
+void login(void);
+
+//Função inicial do programa em que apresenta as principais opções para utilizar o programa
+void menu_login(void);

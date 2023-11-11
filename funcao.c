@@ -132,3 +132,60 @@ void novo_cliente(void) {
   }
 }
 
+
+//Função de login para escolher qual conta acessar, a de funcionário ou a de cliente
+void login(void) {
+  int tipo_de_login;
+  printf("Qual login deseja acessar? (Funcionário = 1) (Cliente = 2): ");
+  scanf("%d", &tipo_de_login);
+
+  if (tipo_de_login == 1) {
+    int cpf_funcionario, senha;
+    printf("Digite seu CPF: ");
+    scanf("%d", &cpf_funcionario);
+    printf("Digite sua senha: ");
+    scanf("%d", &senha);
+
+    if (funcionario_existe(cpf_funcionario, senha)) {
+      printf("Login de funcionário bem-sucedido.\n");
+      menu_funcionario();
+    } else {
+      printf("Login de funcionário inválido.\n");
+    }
+  } else if (tipo_de_login == 2) {
+    int cpf, senha;
+    printf("Digite seu CPF: ");
+    scanf("%d", &cpf);
+    printf("Digite sua senha: ");
+    scanf("%d", &senha);
+
+    if (cliente_existe(cpf, senha)) {
+      printf("Login de cliente bem-sucedido.\n");
+      menu_cliente();
+    } else {
+      printf("Login de cliente inválido.\n");
+    }
+  } else {
+    printf("Opção inválida.\n");
+  }
+}
+
+//Função inicial do programa em que apresenta as principais opções para utilizar o programa
+void menu_login() {
+  int menu;
+  while (menu != 4) {
+    printf("1. Cadastrar funcionário\n");
+    printf("2. Cadastrar cliente\n");
+    printf("3. Login\n");
+    printf("4. Sair\n");
+    printf("Digite o número respectivo à opção desejada: ");
+    scanf("%d", &menu);
+    if (menu == 1) {
+      novo_funcionario();
+    } else if (menu == 2) {
+      novo_cliente();
+    } else if (menu == 3) {
+      login();
+    }
+  }
+}

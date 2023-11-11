@@ -189,3 +189,246 @@ void menu_login() {
     }
   }
 }
+
+
+//Função para realizar um débito
+void debito(struct Cliente *clientes, int tamanho) {
+  int cpf;
+  printf("Digite seu CPF: ");
+  scanf("%d", &cpf);
+
+  FILE *arquivo = fopen("clientes.dat", "rb+");
+  if (arquivo == NULL) {
+    printf("Erro ao abrir o arquivo de clientes.\n");
+    exit(1);
+  }
+
+  struct Cliente cliente;
+
+  while (fread(&cliente, sizeof(struct Cliente), 1, arquivo)) {
+    if (cliente.cpf == cpf) {
+      int senha;
+      printf("Digite sua senha: ");
+      scanf("%d", &senha);
+
+      if (cliente.senha != senha) {
+        printf("Senha incorreta\n");
+        fclose(arquivo);
+        return;
+      }
+
+      float valor;
+      printf("Digite o valor: ");
+      scanf("%f", &valor);
+
+      float tarifa;
+      if (strcmp(cliente.conta, "Comum") == 0) {
+        tarifa = valor * 0.05;
+      } else if (strcmp(cliente.conta, "Plus") == 0) {
+        tarifa = valor * 0.03;
+      }
+
+      float valor_tarifado = valor + tarifa;
+
+      if (cliente.saldo - valor_tarifado >= -1000 &&
+          strcmp(cliente.conta, "Comum") == 0) {
+        cliente.saldo -= valor_tarifado;
+        printf("Saldo atual: R$ %.2f\n", cliente.saldo);
+
+        fseek(arquivo, -sizeof(struct Cliente), SEEK_CUR);
+        fwrite(&cliente, sizeof(struct Cliente), 1, arquivo);
+
+        time_t t = time(NULL);
+        struct tm tm = *localtime(&t);
+        char data_str[100];
+        sprintf(data_str, "Data: %02d/%02d/%04d %02d:%02d", tm.tm_mday,
+                tm.tm_mon + 1, tm.tm_year + 1900, tm.tm_hour, tm.tm_min);
+
+        FILE *historico_arquivo = fopen("historico.txt", "a");
+        if (historico_arquivo == NULL) {
+          printf("Erro ao abrir o arquivo de histórico.\n");
+          exit(1);
+        }
+
+        fprintf(historico_arquivo, "%s - Débito de %.2f (mais %.2f de tarifa) saindo do CPF: %d\n",
+                data_str, valor, tarifa, cpf);
+        fclose(historico_arquivo);
+
+        printf("Débito realizado com sucesso! Novo saldo: %.2f\n",
+               cliente.saldo);
+
+        fclose(arquivo);
+        return;
+
+
+      } else if (cliente.saldo - valor_tarifado >= -5000 &&
+                 strcmp(cliente.conta, "Plus") == 0) {
+        cliente.saldo -= valor_tarifado;
+        printf("Saldo atual: R$ %.2f\n", cliente.saldo);
+
+        fseek(arquivo, -sizeof(struct Cliente), SEEK_CUR);
+        fwrite(&cliente, sizeof(struct Cliente), 1, arquivo);
+
+        time_t t = time(NULL);
+        struct tm tm = *localtime(&t);
+        char data_str[100];
+        sprintf(data_str, "Data: %02d/%02d/%04d %02d:%02d", tm.tm_mday,
+                tm.tm_mon + 1, tm.tm_year + 1900, tm.tm_hour, tm.tm_min);
+
+        FILE *historico_arquivo = fopen("historico.txt", "a");
+        if (historico_arquivo == NULL) {
+          printf("Erro ao abrir o arquivo de histórico.\n");
+          exit(1);
+        }
+
+        fprintf(historico_arquivo, "%s - Débito de %.2f (mais %.2f de tarifa) saindo do CPF: %d\n",
+                data_str, valor, tarifa, cpf);
+        fclose(historico_arquivo);
+
+        printf("Débito realizado com sucesso! Novo saldo: %.2f\n",
+               cliente.saldo);
+
+        fclose(arquivo);
+        return;
+      } else {
+        printf("Saldo insuficiente\n");
+        fclose(arquivo);
+        return;
+      }
+    }
+  }
+
+  printf("Cliente com CPF %d não encontrado.\n", cpf);
+  fclose(arquivo);
+}
+
+//Função para realizar um depósito
+void deposito(struct Cliente *clientes, int tamanho) {
+  int cpf;
+  float valor;
+  printf("Digite o CPF referente à conta do depósito: ");
+  scanf("%d", &cpf);
+  printf("Digite o valor: ");
+  scanf("%f", &valor);
+
+  int cpf_real;
+  cpf_real = cpf;
+
+  FILE *arquivo = fopen("clientes.dat", "rb+");
+  if (arquivo == NULL) {
+    printf("Erro ao abrir o arquivo de clientes.\n");
+    exit(1);
+  }
+
+  struct Cliente cliente;
+  while (fread(&cliente, sizeof(struct Cliente), 1, arquivo)) {
+    if (cliente.cpf == cpf) {
+      cliente.saldo += valor;
+      fseek(arquivo, -sizeof(struct Cliente), SEEK_CUR);
+      fwrite(&cliente, sizeof(struct Cliente), 1, arquivo);
+      fclose(arquivo);
+
+      time_t t = time(NULL);
+      struct tm tm = *localtime(&t);
+      char data_str[100];
+      sprintf(data_str, "Data: %02d/%02d/%04d %02d:%02d", tm.tm_mday,
+              tm.tm_mon + 1, tm.tm_year + 1900, tm.tm_hour, tm.tm_min);
+
+      FILE *historico_arquivo = fopen("historico.txt", "a");
+      if (historico_arquivo == NULL) {
+        printf("Erro ao abrir o arquivo de histórico.\n");
+        exit(1);
+      }
+
+      fprintf(historico_arquivo, "%s - Depósito de %.2f para CPF: %d\n", data_str, valor, cpf_real);
+      fclose(historico_arquivo);
+
+      printf("Depósito realizado com sucesso! Novo saldo: %.2f\n",cliente.saldo);
+      return;
+    }
+  }
+
+  fclose(arquivo);
+  printf("Cliente com CPF %d não encontrado.\n", cpf);
+}
+
+//Função para realizar uma transferência
+void transferencia() {
+  debito(0, 0);
+  deposito(0, 0);
+}
+
+//Função que irá acessar o histórico de transações e imprimi-lo
+void imprimir_historico(int cpf) {
+    FILE *arquivo = fopen("historico.txt", "r");
+    if (arquivo == NULL) {
+        printf("Erro ao abrir o arquivo de histórico.\n");
+        return;
+    }
+
+    char linha[256];
+    int numero_linha = 1;
+    int encontrou = 0;
+
+    while (fgets(linha, sizeof(linha), arquivo)) {
+        char *cpf_str = strstr(linha, "CPF:");
+        if (cpf_str != NULL) {
+            cpf_str += 5;
+            int cpf_lido;
+            if (sscanf(cpf_str, "%d", &cpf_lido) == 1) {
+                if (cpf_lido == cpf) {
+                    encontrou = 1;
+                    printf("%d - %s", numero_linha, linha);
+                }
+            }
+        }
+        numero_linha++;
+    }
+    fclose(arquivo);
+    if (!encontrou) {
+        printf("Nenhuma transação encontrada para o CPF %d.\n", cpf);
+    }
+}
+
+//Função para acessar os dados do cliente para poder chamar a função imprimir_histórico
+void extrato(struct Cliente clientes[], int num_clientes) {
+    int cpf;
+    printf("Digite o CPF da conta que quer acessar o extrato: ");
+    scanf("%d", &cpf);
+
+    FILE *arquivo_clientes = fopen("clientes.dat", "rb");
+    if (arquivo_clientes == NULL) {
+        printf("Erro ao abrir o arquivo de clientes.\n");
+        return;
+    }
+
+    struct Cliente cliente;
+    int encontrado = 0;
+
+    while (fread(&cliente, sizeof(struct Cliente), 1, arquivo_clientes) == 1) {
+        if (cliente.cpf == cpf) {
+            encontrado = 1;
+            int senha;
+            printf("Digite a senha referente ao CPF: ");
+            scanf("%d", &senha);
+
+            if (cliente.senha == senha) {
+                printf("Nome: %s\n", cliente.nome_cliente);
+                printf("CPF: %d\n", cliente.cpf);
+                printf("Conta: %s\n", cliente.conta);
+                printf("Saldo atual: %.2f\n", cliente.saldo);
+
+                imprimir_historico(cpf);
+            } else {
+                printf("Senha incorreta\n");
+            }
+            break;
+        }
+    }
+
+    if (!encontrado) {
+        printf("CPF inválido\n");
+    }
+
+    fclose(arquivo_clientes);
+}

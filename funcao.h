@@ -30,3 +30,15 @@ void salvar_cliente(struct Cliente cliente);
 //Função para salvar os funcionários criados no arquivo binario
 void salvar_funcionario(struct Funcionario funcionario);
 
+//Função para ver se os clientes estão cadastrados no arquivo binario
+int cliente_existe(int cpf, int senha);
+
+//Função para ver se os funcionários estão cadastrados no arquivo binario
+int funcionario_existe(int cpf_funcionario, int senha);
+
+//Função para criar um novo funcionário
+void novo_funcionario(void);
+
+//Função para criar um novo cliente
+void novo_cliente(void);
+

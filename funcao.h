@@ -76,3 +76,11 @@ void listar_funcionarios(void);
 
 //Função para apagar um funcionário em específico e todos os seus dados
 void apagar_funcionarios(struct Funcionario *funcionarios, int tamanho);
+
+//Função do menu do cliente
+void menu_cliente(void);
+
+//Função do menu do funcionário
+void menu_funcionario(void);
+
+#endif

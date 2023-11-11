@@ -552,3 +552,59 @@ void apagar_funcionarios(struct Funcionario *funcionarios, int tamanho) {
   }
 }
 
+
+//Função do menu do cliente
+void menu_cliente() {
+  int menu_cliente;
+
+  while (1) {
+    printf("1. Débito\n");
+    printf("2. Déposito\n");
+    printf("3. Extrato\n");
+    printf("4. Transferencia\n");
+    printf("5. Sair\n");
+    printf("Digite o número respectivo à opção desejada: ");
+    scanf("%d", &menu_cliente);
+
+    if (menu_cliente == 5) {
+      break;
+    } else if (menu_cliente == 1) {
+      debito(0, 0);
+    } else if (menu_cliente == 2) {
+      deposito(0, 0);
+    } else if (menu_cliente == 3) {
+      extrato(0, 0);
+    } else if (menu_cliente == 4) {
+      transferencia();
+    }
+  }
+}
+
+//Função do menu do funcionário
+void menu_funcionario() {
+  int menu_funcionario;
+  int tamanho = 0;
+  struct Cliente clientes;
+
+  while (1) {
+    printf("1. Listar clientes\n");
+    printf("2. Apagar clientes\n");
+    printf("3. Listar funcionários\n");
+    printf("4. Apagar funcionários\n");
+    printf("5. Sair\n");
+    printf("Digite o número respectivo à opção desejada: ");
+    scanf("%d", &menu_funcionario);
+
+    if (menu_funcionario == 5) {
+      break;
+    } else if (menu_funcionario == 1) {
+      listar_clientes();
+    } else if (menu_funcionario == 2) {
+      apagar_clientes(0, 0);
+    } else if (menu_funcionario == 3) {
+      listar_funcionarios();
+    } else if (menu_funcionario == 4) {
+      apagar_funcionarios(0, 0);
+    }
+  }
+}
